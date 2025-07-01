@@ -1,7 +1,8 @@
 ```markdown
 # 🛒 Product Management API
 
-A simple API to manage product listings. It supports filtering, search, and pagination. Built with Node.js, Express, MongoDB, and uses **pnpm** for package management.
+A simple API to manage product listings. It supports filtering, search, and pagination.
+Built with Node.js, Express, MongoDB, and uses **pnpm** for package management.
 
 ---
 
