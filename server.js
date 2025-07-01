@@ -4,13 +4,28 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { v4: uuidv4 } = require('uuid');
+const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
+const cors = require('cors');
+const helmet = require('helmet');
+const morgan = require('morgan');
+require('dotenv').config();
+
+const authRoutes = require('./routes/authRoutes');
+const errorHandler = require('./Errors/errorHandler');
+const connectDB = require('./config/db');
+
 
 // Initialize Express app
 const app = express();
-const PORT = process.env.PORT || 3000;
+// const PORT = process.env.PORT || 3000;
 
 // Middleware setup
 app.use(bodyParser.json());
+app.use(cors ({ origin: 'http://localhost:3000', credentials: true}));
+app.use(helmet());
+app.use(cookieParser());
+app.use(morgan('dev'));
 
 // Sample in-memory products database
 let products = [
@@ -42,7 +57,7 @@ let products = [
 
 // Root route
 app.get('/', (req, res) => {
-  res.send('Welcome to the Product API! Go to /api/products to see all products.');
+  res.send('Hello, World! Welcome to the Product API! Go to /api/products to see all products.');
 });
 
 // TODO: Implement the following routes:
@@ -51,11 +66,26 @@ app.get('/', (req, res) => {
 // POST /api/products - Create a new product
 // PUT /api/products/:id - Update a product
 // DELETE /api/products/:id - Delete a product
+const productRoutes = require('./routes/productRoutes');
+app.use('/api/products', productRoutes);
 
 // Example route implementation for GET /api/products
 app.get('/api/products', (req, res) => {
   res.json(products);
 });
+
+//Routes 
+app.use('/api/auth', authRoutes);
+
+// Error Handling Middleware 
+app.use(errorHandler);
+
+// Database +Server Initaialization
+const PORT = process.env.PORT || 5000;
+connectDB().then(() => {
+  app.listen(PORT, () => console.log(`Serveris running on port ${PORT}`));
+}); 
+
 
 // TODO: Implement custom middleware for:
 // - Request logging
@@ -63,9 +93,9 @@ app.get('/api/products', (req, res) => {
 // - Error handling
 
 // Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+// app.listen(PORT, () => {
+//   console.log(`Server is running on http://localhost:${PORT}`);
+// });
 
 // Export the app for testing purposes
 module.exports = app; 
